@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Feedback System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .feedback-form {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .search-form {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <h1 class="text-center mb-4">Course Feedback System</h1>
+        
+        <!-- Feedback Form -->
+        <div class="feedback-form shadow-sm">
+            <h3 th:text="${feedback.id != null ? 'Edit Feedback' : 'Add New Feedback'}">Add New Feedback</h3>
+            <form th:object="${feedback}" th:action="${feedback.id != null ? '/feedback/update/' + feedback.id : '/feedback'}" method="post">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="className" class="form-label">Class</label>
+                        <input type="text" class="form-control" id="className" th:field="*{className}" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('className')}" th:errors="*{className}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="subject" th:field="*{subject}" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="feedbackText" class="form-label">Feedback</label>
+                        <textarea class="form-control" id="feedbackText" th:field="*{feedbackText}" rows="3" required></textarea>
+                        <div class="text-danger" th:if="${#fields.hasErrors('feedbackText')}" th:errors="*{feedbackText}"></div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> 
+                            <span th:text="${feedback.id != null ? 'Update' : 'Submit'}">Submit</span>
+                        </button>
+                        <a th:if="${feedback.id != null}" href="/" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Search Form -->
+        <div class="search-form shadow-sm">
+            <h3>Filter Feedbacks</h3>
+            <form action="/feedback/search" method="get">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="name" placeholder="Filter by name" th:value="${searchName}">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" name="className" placeholder="Filter by class" th:value="${searchClassName}">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" name="subject" placeholder="Filter by subject" th:value="${searchSubject}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Feedback Table -->
+        <div class="table-responsive shadow">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Subject</th>
+                        <th>Feedback</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${feedbacks.empty}">
+                        <td colspan="5" class="text-center">No feedbacks available</td>
+                    </tr>
+                    <tr th:each="feedback : ${feedbacks}">
+                        <td th:text="${feedback.name}">John Doe</td>
+                        <td th:text="${feedback.className}">CS101</td>
+                        <td th:text="${feedback.subject}">Java Programming</td>
+                        <td th:text="${feedback.feedbackText}">Great course!</td>
+                        <td>
+                            <a th:href="@{/feedback/edit/{id}(id=${feedback.id})}" class="btn btn-sm btn-warning">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <a th:href="@{/feedback/delete/{id}(id=${feedback.id})}" class="btn btn-sm btn-danger" 
+                               onclick="return confirm('Are you sure you want to delete this feedback?')">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
